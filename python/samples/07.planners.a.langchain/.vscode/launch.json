@@ -57,6 +57,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/app.py",
             "console": "integratedTerminal",
+            "justMyCode": false
         }
     ],
     "compounds": [

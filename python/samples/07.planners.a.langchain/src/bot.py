@@ -13,6 +13,7 @@ from typing import Any, Dict, List
 
 from botbuilder.core import MemoryStorage, TurnContext
 from langchain.chat_models.base import BaseChatModel
+from langchain_community.chat_models import ChatOllama
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from teams import Application, ApplicationOptions, TeamsAdapter
 from teams.ai import AIOptions
@@ -34,13 +35,15 @@ if config.OPENAI_KEY is None and config.AZURE_OPENAI_KEY is None:
 
 model: BaseChatModel
 
-if config.OPENAI_KEY:
-    os.environ["OPENAI_API_KEY"] = config.OPENAI_KEY
-    model = ChatOpenAI(model="gpt-4-turbo")
-elif config.AZURE_OPENAI_KEY and config.AZURE_OPENAI_ENDPOINT:
-    os.environ["AZURE_OPENAI_API_KEY"] = config.AZURE_OPENAI_KEY
-    os.environ["AZURE_OPENAI_ENDPOINT"] = config.AZURE_OPENAI_ENDPOINT
-    model = AzureChatOpenAI(model="gpt-4-turbo")
+# if config.OPENAI_KEY:
+#     os.environ["OPENAI_API_KEY"] = config.OPENAI_KEY
+#     model = ChatOpenAI(model="gpt-35-turbo")
+# elif config.AZURE_OPENAI_KEY and config.AZURE_OPENAI_ENDPOINT:
+#     os.environ["AZURE_OPENAI_API_KEY"] = config.AZURE_OPENAI_KEY
+#     os.environ["AZURE_OPENAI_ENDPOINT"] = config.AZURE_OPENAI_ENDPOINT
+#     model = AzureChatOpenAI(model="gpt-35-turbo", api_version="2023-05-15")
+model = ChatOllama(model="llama3")
+
 
 prompts = PromptManager(
     PromptManagerOptions(prompts_folder=f"{os.path.dirname(os.path.abspath(__file__))}/prompts")
@@ -131,7 +134,7 @@ async def on_error(context: TurnContext, error: Exception):
     #       application insights.
     print(f"\n [on_turn_error] unhandled error: {error}", file=sys.stderr)
     traceback.print_exc()
-    print(todict(error))
+    print(error)
 
     # Send a message to the user
     await context.send_activity("The bot encountered an error or bug.")

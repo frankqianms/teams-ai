@@ -92,14 +92,15 @@ class LangChainPlanner(Planner[AppTurnState]):
         activity_id: Optional[str] = None
         buffer: str = ""
 
-        async for chunk in self.model.astream(
+        astream = self.model.astream(
             [m.to_langchain() for m in state.conversation.history],
             tools=(
                 [{"type": "function", "function": a.to_dict()} for a in template.actions]
                 if template.actions is not None
                 else []
             ),
-        ):
+        )
+        async for chunk in astream:
             res = res + chunk if res is not None else chunk
 
             if isinstance(chunk.content, str):
